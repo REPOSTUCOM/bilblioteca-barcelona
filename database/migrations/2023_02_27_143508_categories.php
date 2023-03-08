@@ -15,7 +15,7 @@ return new class extends Migration
             $table->bigIncrements('id')->unsigned(); 
             $table->string('name')->unique(); 
             $table->timestamps();
-            });
+        });
     }
 
     /**
