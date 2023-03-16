@@ -1,51 +1,61 @@
 @extends('welcome')
 
 @section('content')
-    <div class="container">
-        <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <div class="card">
-                    <div class="card-header">Crear libro</div>
-
-                    <div class="card-body">
-                        <form method="POST" action="{{ route('books.store') }}">
-                            @csrf
-
-                            <div class="form-group row">
-                                <label for="title" class="col-md-4 col-form-label text-md-right">Título</label>
-
-                                <div class="col-md-6">
-                                    <input id="title" type="text" class="form-control" name="title" required autofocus>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="author" class="col-md-4 col-form-label text-md-right">Autor</label>
-
-                                <div class="col-md-6">
-                                    <input id="author" type="text" class="form-control" name="author" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group row">
-                                <label for="published_date" class="col-md-4 col-form-label text-md-right">Fecha de publicación</label>
-
-                                <div class="col-md-6">
-                                    <input id="published_date" type="date" class="form-control" name="published_date" required>
-                                </div>
-                            </div>
-
-                            <div class="form-group row mb-0">
-                                <div class="col-md-8 offset-md-4">
-                                    <button type="submit" class="btn btn-primary">
-                                        Crear
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
+    <h1>Crear nuevo libro</h1>
+    <form method="POST" action="{{ route('books.store') }}">
+        @csrf
+        <div class="form-group">
+            <label for="title">Título</label>
+            <input type="text" name="title" id="title" class="form-control" value="{{ old('title') }}" required autofocus>
+            @error('title')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
         </div>
-    </div>
+
+        <div class="form-group">
+            <label for="author">Autor</label>
+            <input type="text" name="author" id="author" class="form-control" value="{{ old('author') }}" required>
+            @error('author')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+    
+       
+
+        <div class="form-group">
+            <label for="description">Descripción</label>
+            <textarea name="description" id="description" class="form-control">{{ old('description') }}</textarea>
+            @error('description')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="price">Precio</label>
+            <input type="number" name="price" id="price" class="form-control" value="{{ old('price') }}" min="0" step="0.01" required>
+            @error('price')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+         <div class="form-group">
+         <label for="published_date">Fecha de Publicación:</label>
+          <input type="date" name="published_date" class="form-control" value="{{ old('published_date') }}" />
+            @error('published_date')
+                <span class="invalid-feedback" role="alert">
+                    <strong>{{ $message }}</strong>
+                </span>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn btn-primary">Crear libro</button>
+    </form>
 @endsection

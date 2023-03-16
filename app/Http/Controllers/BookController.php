@@ -1,9 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
+
 use App\Models\Book;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class BookController extends Controller
 {
@@ -13,7 +13,7 @@ class BookController extends Controller
     public function index()
     {
         $books = DB::table('books')->get();
-         return view('books.index', compact('books'));
+        return view('books.index', compact('books'));
     }
 
     /**
@@ -24,57 +24,38 @@ class BookController extends Controller
         return view('books.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-  /*   public function store(Request $request)
+    public function store(Request $request)
     {
-        // Valida los datos del formulario
+        // Define las reglas de validación para los datos del libro
         $request->validate([
-            'title' => 'required|max:255',
-            'author' => 'required|max:255',
-            'published_date' => 'required|date',
+            'title' => 'required|string|max:255',
+            'author' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'price' => 'required|numeric|min:0',
         ]);
-    
-        // Crea un nuevo libro
+
+        // Crea un nuevo objeto Book y asigna los valores de los datos proporcionados en la solicitud
+        $book = Book::create([
+            'title' => $request->input('title'),
+            'author' => $request->input('author'),
+            'description' => $request->input('description'),
+            'price' => $request->input('price'),
+            'published_date' => $request->input('published_date'),
+        ]);
+
+        // Guarda el libro en la base de datos
         DB::beginTransaction();
         try {
-            $book = new Book;
-            $book->title = $request->title;
-            $book->author = $request->author;
-            $book->published_date = $request->published_date;
             $book->save();
-    
             DB::commit();
-    
-            return redirect()->route('books.index')->with('success', 'El libro se ha creado correctamente.');
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
             DB::rollback();
-            return redirect()->route('books.index')->with('error', 'Ha ocurrido un error al crear el libro. Inténtelo de nuevo más tarde.');
+            return response()->json(['message' => 'Error al guardar el libro'], 500);
         }
-    } */
-public function store(Request $request)
-{
-    // Validación de los datos recibidos por el formulario
-    $validatedData = $request->validate([
-        'title' => 'required',
-        'author' => 'required',
-        'published_date' => 'required|date',
-    ]);
 
-    // Creación de un nuevo objeto libro a partir de los datos validados
-    $book = new Book([
-        'title' => $validatedData['title'],
-        'author' => $validatedData['author'],
-        'published_date' => $validatedData['published_date'],
-    ]);
-
-    // Guardado del nuevo libro en la base de datos
-    $book->save();
-
-    // Redireccionamiento a la página de listado de libros
-    return redirect()->route('books.index');
-}
+        // Devuelve una respuesta con el código de estado 200 y un mensaje de éxito
+        return redirect()->route('success');
+    }
 
     /**
      * Display the specified resource.
@@ -98,21 +79,33 @@ public function store(Request $request)
     public function update(Request $request, string $id)
     {
         DB::table('books')
-        ->where('id', $id)
-        ->update([
-            'title' => $request->input('title'),
-            'author' => $request->input('author'),
-            'published_date' => $request->input('published_date')
-        ]);
+            ->where('id', $id)
+            ->update([
+                'title' => $request->input('title'),
+                'author' => $request->input('author'),
+                'published_date' => $request->input('published_date'),
+            ]);
 
-    return redirect()->route('books.index')->with('success', 'Libro actualizado correctamente');
+        return redirect()->route('books.index')->with('success', 'Libro actualizado correctamente');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $book = Book::find($id);
+        if (!$book) {
+            return redirect()->route('books.index')->with('error', 'El libro no existe');
+        }
+
+        // Eliminar los registros relacionados en la tabla `book_category`
+        DB::table('book_category')->where('book_id', $id)->delete();
+
+        // Eliminar el registro en la tabla `books`
+        DB::table('books')->where('id', $id)->delete();
+
+        return redirect()->route('books.index')->with('success', 'El libro ha sido eliminado');
     }
+
 }

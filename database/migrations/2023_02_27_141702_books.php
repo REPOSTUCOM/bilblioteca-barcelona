@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('books', function (Blueprint $table) {
             $table->bigIncrements('id')->unsigned(); 
-            $table->string('ISBN')->unique(); 
+            $table->string('ISBN')->nullable(); 
             $table->string('title');
             $table->string('author');
             $table->date('published_date');
