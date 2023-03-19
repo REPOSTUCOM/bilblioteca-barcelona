@@ -11,6 +11,14 @@ class Book extends Model
     use HasFactory;
     protected $fillable = ['title', 'author', 'description' ,'published_date', 'price',];
    
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($book) {
+            $book->isbn = $book->generateISBN();
+        });
+    }
         public function generateISBN()
         {
             $isbn = '978'; // El prefijo 978 es el utilizado para los códigos de barras EAN de libros
@@ -21,9 +29,9 @@ class Book extends Model
 
       //Call to undefined relationship [categories] on model [App\Models\Book].
       public function categories()
-      {
-          return $this->belongsToMany(Category::class, 'book_category');
-      }
+    {
+        return $this->belongsToMany(Category::class);
+    }
 
       public function bookCategory()
       {

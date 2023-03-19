@@ -3,9 +3,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Book;
 use App\Models\Category;
+use App\Models\BookCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\BookCategory;
 
 class BookController extends Controller
 {
@@ -89,32 +89,35 @@ class BookController extends Controller
      */
     public function edit($id)
     {
-        $book = Book::findOrFail($id);
+        $book = Book::with('categories')->findOrFail($id);
         $categories = Category::all();
-        return view('books.edit', ['book' => $book, 'categories' => $categories]);
-    }
     
+        $selectedCategoryIds = $book->categories->pluck('id')->toArray(); // Arreglo de IDs de categorías seleccionadas
+    
+        return view('books.edit', compact('book', 'categories', 'selectedCategoryIds'));
+    }
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, $id)
-{
-    $book = Book::findOrFail($id);
-    $book->title = $request->input('title');
-    $book->author = $request->input('author');
-    $book->published_date = $request->input('published_date');
+    {
+        $book = Book::findOrFail($id);
     
-    $book_category = BookCategory::findOrFail($request->input('book_category_id'));
-    $category_id = $book_category->category_id;
-
-    $book->category_id = $category_id;
-
-    $book->save();
+        $book->title = $request->input('title');
+        $book->author = $request->input('author');
+        $book->description = $request->input('description');
+        $book->price = $request->input('price');
+        $book->published_date = $request->input('published_date');
     
-    return redirect()->route('books.index')->with('success', 'Libro actualizado exitosamente.');
-}
-
-
+        // Actualizar la relación many-to-many en la tabla intermedia book_category
+        $categories = $request->input('categories');
+        $book->categories()->sync($categories);
+    
+        $book->save();
+    
+        return redirect()->route('books.index')->with('success', 'Libro actualizado correctamente');
+    }
+    
     /**
      * Remove the specified resource from storage.
      */

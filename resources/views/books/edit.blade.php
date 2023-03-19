@@ -21,11 +21,22 @@
                 value="{{ $book->published_date }}">
         </div>
         <div class="form-group">
+            <label for="description">Descripción</label>
+            <textarea class="form-control" id="description" name="description"
+                rows="3">{{ $book->description }}</textarea>
+        </div>
+        <div class="form-group">
+            <label for="price">Precio:</label>
+            <input type="number" class="form-control" id="price" name="price" value="{{ $book->price }}">
+        </div>
+        <div class="form-group">
             <label for="category_id">Categoría:</label>
-            <select class="form-control" id="category_id" name="category_id">
-                @foreach ($categories as $category)
-                <option value="{{ $category->id }}" {{ $book->category_id == $category->id ? 'selected' : '' }}>
-                    {{ $category->name }}</option>
+            <select name="categories[]" class="form-control" multiple>
+                @foreach($categories as $category)
+                <option value="{{ $category->id }}"
+                    {{ in_array($category->id, $selectedCategoryIds) ? 'selected' : '' }}>
+                    {{ $category->name }}
+                </option>
                 @endforeach
             </select>
         </div>
