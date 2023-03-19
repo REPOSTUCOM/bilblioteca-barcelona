@@ -13,21 +13,21 @@ class BookController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $selected_category = $request->input('category');
-    $categories = Category::all();
-    $books = Book::with('categories')->orderBy('title', 'asc');
-
-    if ($selected_category) {
-        $books = $books->whereHas('categories', function ($query) use ($selected_category) {
-            $query->where('category_id', $selected_category);
-        });
+    {
+        $selected_category = $request->input('category');
+        $categories = Category::all();
+        $books = Book::with('categories')->orderBy('title', 'asc');
+    
+        if ($selected_category) {
+            $books = $books->whereHas('categories', function ($query) use ($selected_category) {
+                $query->where('category_id', $selected_category);
+            });
+        }
+    
+        $books = $books->paginate(10); // mostrar 10 elementos por página
+    
+        return view('books.index', compact('books', 'categories', 'selected_category'));
     }
-
-    $books = $books->get();
-
-    return view('books.index', compact('books', 'categories', 'selected_category'));
-}
     
     
         

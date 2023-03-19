@@ -1,6 +1,7 @@
 @extends('welcome')
 
 @section('content')
+
 <div class="container">
     <div class="row mb-4">
         <div class="col-md-6">
@@ -73,6 +74,15 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 d-flex justify-content-center">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {{ $books->links('vendor.pagination.bootstrap-5') }}
+                </ul>
+            </nav>
         </div>
     </div>
 </div>
