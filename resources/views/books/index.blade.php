@@ -3,12 +3,32 @@
 @section('content')
 
 <div class="container">
+
     <div class="row mb-4">
         <div class="col-md-6">
             <h1>Lista de libros</h1>
         </div>
         <div class="col-md-6 d-flex justify-content-end align-items-center">
             <a href="{{ route('books.create') }}" class="btn btn-success">Crear libro</a>
+        </div>
+    </div>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="card-title mb-0">Buscar libro</h4>
+                </div>
+                <div class="card-body">
+                    <form action="{{ route('books.index') }}" method="GET">
+                        <div class="form-group mb-3">
+                            <label for="search" class="form-label visually-hidden">Buscar libro</label>
+                            <input type="text" id="search" name="search" class="form-control"
+                                placeholder="Buscar libro..." value="{{ $search }}">
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Buscar</button>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
     <div class="row mb-4">

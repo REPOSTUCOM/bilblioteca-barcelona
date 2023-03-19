@@ -16,17 +16,23 @@ class BookController extends Controller
     {
         $selected_category = $request->input('category');
         $categories = Category::all();
+        $search = $request->input('search');
         $books = Book::with('categories')->orderBy('title', 'asc');
-    
+        
         if ($selected_category) {
             $books = $books->whereHas('categories', function ($query) use ($selected_category) {
                 $query->where('category_id', $selected_category);
             });
         }
     
-        $books = $books->paginate(10); // mostrar 10 elementos por página
-    
-        return view('books.index', compact('books', 'categories', 'selected_category'));
+        if ($search) {
+            $books = $books->where('title', 'like', '%' . $search . '%')
+                           ->orWhere('author', 'like', '%' . $search . '%');
+        }
+        
+        $books = $books->paginate(10);
+        
+        return view('books.index', compact('books', 'categories', 'selected_category', 'search'));
     }
     
     
